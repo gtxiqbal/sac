@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+            <div class="col-md-12 vendor_gpon" id="{{ vendor_name }}">
+                {% if vendor_name == "fh" %}
+                    <h1 class="display-4">{{ page_title }} FIBERHOME</h1>
+                {% else %}
+                    <h1 class="display-4">{{ page_title }} ZTE</h1>
+                {% endif %}
+
+                <form action="{% url 'auto_tl1:wifi' vendor_name %}" id="form_config" method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="inputSto">STO</label>
+                            <select class="form-control" name="sto" id="inputSto">
+                                <option value="pilih">Pilih STO</option>
+                                {% for sto in stos %}
+                                    <option value="{{ sto.sto_code }}">{{ sto.sto_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label for="inputIp">IP GPON</label>
+                            <select class="form-control" name="ip_gpon" id="inputIp" disabled>
+                                <option value="pilih">Pilih IP GPON</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-1">
+                            <label for="inputSlot">SLOT</label>
+                            <input type="number" class="form-control cek_WIFI" name="slot" id="inputSlot" placeholder="Slot : x">
+                        </div>
+
+                        <div class="form-group col-md-1">
+                            <label for="inputPort">Port</label>
+                            <input type="number" class="form-control cek_WIFI" name="port" id="inputPort" placeholder="Port : x">
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="inputSN">Serial Number</label>
+                            <input type="text" class="form-control cek_WIFI" name="sn" id="inputSN" placeholder="FHTTxxxxxxxx">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-success" name="cek_WIFI" id="cek_WIFI">Cek Password Wifi</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div id="hasil_cek_wifi">
+                            <span class="spinner-border spinner-border-sm text-primary spinner_cek_wifi" style="display: none"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-1">
+                            <label for="inputSSID">Pilih SSID</label>
+                            <select class="form-control" name="SSID" id="inputSSID">
+                                <option value="1">SSID 1</option>
+                                <option value="2">SSID 2</option>
+                                <option value="3">SSID 3</option>
+                                <option value="4">SSID 4</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="inputNamaSSID">Nama SSID</label>
+                            <input type="text" class="form-control" name="nama_SSID" id="inputNamaSSID">
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="inputSSIDAuth">SSID Auth</label>
+                            <select class="form-control" name="ssid_AUTH" id="inputSSIDAuth">
+                                <option value="pilih">Pilih Auth</option>
+                                <option value="OPEN">OPEN</option>
+                                <option value="SHARED">SHARED</option>
+                                <option value="WEPAUTO">WEPAUTO</option>
+                                <option value="WPAPSK">WPAPSK</option>
+                                <option value="WPA">WPA</option>
+                                <option value="WPA2PSK">WPA2PSK</option>
+                                <option value="WPA2">WPA2</option>
+                                <option value="WPA/WPA2">WPA/WPA2</option>
+                                <option value="WPAPSK/WPA2PSK">WPAPSK/WPA2PSK</option>
+                                <option value="WAIPSK">WAIPSK</option>
+                                <option value="WAI">WAI</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="inputSSIDEncryptype">SSID Encryptype</label>
+                            <select class="form-control" name="ssid_Encryptype" id="inputSSIDEncryptype" disabled>
+                                <option value="pilih">Pilih Encryptype</option>
+                                <option value="NONE">NONE</option>
+                                <option value="WEP">WEP</option>
+                                <option value="TKIP">TKIP</option>
+                                <option value="AES">AES</option>
+                                <option value="TKIPAES">TKIPAES</option>
+                                <option value="WPI">WPI</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="inputPasswordSSID">Password SSID</label>
+                            <input type="password" class="form-control" name="pass_SSID" id="inputPasswordSSID">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-1">
+                            <label for="wifiOn_ENABLE">Wifi Power</label>
+                            <div class="form-control form-radio form-control-inline">
+                                <input type="radio" id="wifiOn_ENABLE" class="form-control-input" value="enable" name="wifi_ENABLE" checked>
+                                <label class="form-control-label" for="wifiOn_ENABLE">On</label>
+                            </div>
+
+                            <div class="form-control form-radio form-control-inline">
+                                <input type="radio" id="wifiOff_ENABLE" class="form-control-input" value="disable" name="wifi_ENABLE">
+                                <label class="form-control-label" for="wifiOff_ENABLE">Off</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-1">
+                            <label for="ssidOn_ENABLE">SSID</label>
+                            <div class="form-control form-radio form-control-inline">
+                                <input type="radio" id="ssidOn_ENABLE" class="form-control-input" value="1" name="ssid_ENABLE" checked>
+                                <label class="form-control-label" for="ssidOn_ENABLE">Enable</label>
+                            </div>
+
+                            <div class="form-control form-radio form-control-inline">
+                                <input type="radio" id="ssidOff_ENABLE" class="form-control-input" value="0" name="ssid_ENABLE">
+                                <label class="form-control-label" for="ssidOff_ENABLE">Disable</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-1">
+                            <label for="hiddenOn_ENABLE">Hidden</label>
+                            <div class="form-control form-radio form-control-inline">
+                                <input type="radio" id="hiddenOn_ENABLE" class="form-control-input" value="0" name="hidden_ENABLE">
+                                <label class="form-control-label" for="hiddenOn_ENABLE">Enable</label>
+                            </div>
+
+                            <div class="form-control form-radio form-control-inline">
+                                <input type="radio" id="hiddenOff_ENABLE" class="form-control-input" value="1" name="hidden_ENABLE" checked>
+                                <label class="form-control-label" for="hiddenOff_ENABLE">Disable</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="inputOnt" class="custom-control-input" value="Add" name="config_SSID">
+                            <label class="custom-control-label" for="inputOnt">Add SSID</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="inputModify" class="custom-control-input" value="Modify" name="config_SSID" checked>
+                            <label class="custom-control-label" for="inputModify">Modify SSID</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" name="ubah_WIFI" id="ubah_WIFI">Ubah Password Wifi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('#cek_WIFI').click(function () {
+                $('#hasil_cek_wifi').html('<span class="spinner-border spinner-border-sm text-primary spinner_cek_wifi" style="display: none;"></span>')
+
+                sto = $('#inputSto').val();
+                ip_gpon = $('#inputIp').val();
+                slot = $('#inputSlot').val();
+                port = $('#inputPort').val();
+                ont = $('#inputSN').val();
+
+                if (sto == 'pilih') {
+                    alert('STO belum dipilih!!!');
+                } else if (ip_gpon == 'pilih') {
+                    alert('IP GPON belum dipilih!!!');
+                } else if (slot == '') {
+                    alert('Slot GPON belum diisi!!!');
+                } else if (port == '') {
+                    alert('Port GPON belum diisi!!!');
+                } else if (ont == '') {
+                    alert('SN ONT belum diisi!!!');
+                } else {
+                    Swal.fire({
+                        title: 'Harap Tunggu...',
+                        onBeforeOpen: () => {
+                            Swal.showLoading()
+
+                            $.ajax({
+                                type: 'POST',
+                                url: "{% url 'auto_tl1:wifi' 'fh' %}",
+                                data: {
+                                    'csrfmiddlewaretoken' : $('meta[name="csrf-token"]').attr('content'),
+                                    'ip_gpon' : ip_gpon,
+                                    'slot' : slot,
+                                    'port' : port,
+                                    'sn' : ont,
+                                    'cek_WIFI' : $(this).val()
+                                },
+                                success: function (result) {
+                                    if (result.status == true) {
+                                        Swal.fire({
+                                            type: 'success',
+                                            title: 'OK',
+                                            showConfirmButton: true,
+                                            allowOutsideClick: false
+                                        });
+
+                                        $('#hasil_cek_wifi').html('<span class="spinner-border spinner-border-sm text-primary spinner_cek_wifi" style="display: none;"></span>');
+                                        $('#hasil_cek_wifi').append('<pre>'+ result.data +'</pre>');
+                                    } else {
+                                        Swal.fire({
+                                            type: 'error',
+                                            title: result.data,
+                                            showConfirmButton: true,
+                                            allowOutsideClick: false
+                                        });
+                                    }
+                                }
+                            });
+                        },
+                        allowOutsideClick: false
+                    });
+                }
+            });
+
+            $('#inputSSIDAuth').change(function () {
+                 isi = $(this).val();
+                 
+                 function open() {
+                     $('#inputSSIDEncryptype').attr('disabled', false);
+                     $('#inputSSIDEncryptype').html('<option value="NONE">NONE</option>');
+                     $('#inputSSIDEncryptype').append('<option value="WEP">WEP</option>');
+                 }
+
+                 function shared() {
+                     $('#inputSSIDEncryptype').attr('disabled', false);
+                     $('#inputSSIDEncryptype').html('<option value="WEP">WEP</option>');
+                 }
+
+                 function wpapsk() {
+                     $('#inputSSIDEncryptype').attr('disabled', false);
+                     $('#inputSSIDEncryptype').html('<option value="TKIP">TKIP</option>');
+                     $('#inputSSIDEncryptype').append('<option value="AES">AES</option>');
+                     $('#inputSSIDEncryptype').append('<option value="TKIPAES">TKIPAES</option>');
+                 }
+
+                 function waipsk() {
+                     $('#inputSSIDEncryptype').attr('disabled', false);
+                     $('#inputSSIDEncryptype').html('<option value="WPI">WPI</option>');
+                 }
+
+                 if (isi == 'pilih') {
+                     $('#inputSSIDEncryptype').attr('disabled', true);
+                     $('#inputSSIDEncryptype').html('<option value="pilih">Pilih Encryptype</option>');
+                 } else if (isi == 'OPEN') {
+                     open();
+                 } else if (isi == 'SHARED' || isi == 'WEPAUTO') {
+                     shared();
+                 } else if (isi == 'WPAPSK' || isi == 'WPA' || isi == 'WPA2PSK' || isi == 'WPA2' || isi == 'WPA/WPA2' || isi == 'WPAPSK/WPA2PSK') {
+                     wpapsk();
+                 } else {
+                     waipsk();
+                 }
+
+             });
+
+            $('#ubah_WIFI').click(function () {
+                sto = $('#inputSto').val();
+                ip_gpon = $('#inputIp').val();
+                slot = $('#inputSlot').val();
+                port = $('#inputPort').val();
+                ont = $('#inputSN').val();
+                ssid = $('#inputSSID').val();
+                nama_SSID = $('#inputNamaSSID').val();
+                ssid_AUTH = $('#inputSSIDAuth').val();
+                ssid_Encryptype = $('#inputSSIDEncryptype').val();
+                pass_SSID = $('#inputPasswordSSID').val();
+                wifi_ENABLE = $('input[name="wifi_ENABLE"]:checked').val();
+                ssid_ENABLE = $('input[name="ssid_ENABLE"]:checked').val();
+                hidden_ENABLE = $('input[name="hidden_ENABLE"]:checked').val();
+                config_SSID = $('input[name="config_SSID"]:checked').val();
+
+                if (sto == 'pilih') {
+                    alert('STO belum dipilih!!!');
+                } else if (ip_gpon == 'pilih') {
+                    alert('IP GPON belum dipilih!!!');
+                } else if (slot == '') {
+                    alert('Slot GPON belum diisi!!!');
+                } else if (port == '') {
+                    alert('Port GPON belum diisi!!!');
+                } else if (ont == '') {
+                    alert('SN ONT belum diisi!!!');
+                } else if (nama_SSID == '') {
+                    alert('Nama SSID masih kosong!!!');
+                } else if (ssid_AUTH == 'pilih') {
+                    alert('Auth SSID belum dipilih!!!');
+                } else if (pass_SSID == '') {
+                    alert('Password SSID masih kosong!!!');
+                } else {
+                    Swal.fire({
+                        title: 'Harap Tunggu...',
+                        onBeforeOpen: () => {
+                            Swal.showLoading()
+
+                            $.ajax({
+                                type: 'POST',
+                                url: "{% url 'auto_tl1:wifi' 'fh' %}",
+                                data: {
+                                    'csrfmiddlewaretoken' : $('meta[name="csrf-token"]').attr('content'),
+                                    'ip_gpon' : ip_gpon,
+                                    'slot' : slot,
+                                    'port' : port,
+                                    'sn' : ont,
+                                    'SSID' : ssid,
+                                    'nama_SSID' : nama_SSID,
+                                    'ssid_AUTH' : ssid_AUTH,
+                                    'ssid_Encryptype' : ssid_Encryptype,
+                                    'wifi_ENABLE' : wifi_ENABLE,
+                                    'ssid_ENABLE' : ssid_ENABLE,
+                                    'hidden_ENABLE' : hidden_ENABLE,
+                                    'pass_SSID' : pass_SSID,
+                                    'config_SSID' : config_SSID,
+                                    'ubah_WIFI' : $(this).val()
+                                },
+                                success: function (result) {
+                                    if (result.status == true) {
+                                        Swal.fire({
+                                            type: 'success',
+                                            title: result.data,
+                                            showConfirmButton: true,
+                                            allowOutsideClick: false
+                                        })
+                                    } else {
+                                        Swal.fire({
+                                            type: 'success',
+                                            title: result.data,
+                                            showConfirmButton: true,
+                                            allowOutsideClick: false
+                                        })
+                                    }
+                                }
+                            });
+                        },
+                        allowOutsideClick: false
+                    });
+                }
+
+            });
+
+        });
+    </script>
+
+{% endblock %}

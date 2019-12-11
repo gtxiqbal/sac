@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mt-5 card-deck" style="margin:auto;">
+                <div class="card border-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-body text-primary">
+                    <h5 class="card-title">{{ all_devices }}</h5>
+                    <div class="mr-3 text-right" style="font-size: 36px;">
+                        <i class="fa fa-list fa-lg"></i>
+                    </div>
+                    </div>
+                    <div class="card-footer bg-primary border-primary text-white">Total GPON</div>
+                </div>
+
+                <div class="card border-success mb-3" style="max-width: 18rem;">
+                    <div class="card-body text-success">
+                    <h5 class="card-title">{{ fh_device }}</h5>
+                    <div class="mr-3 text-right" style="font-size: 36px;">
+                        <i class="fa fa-hdd-o fa-lg"></i>
+                    </div>
+                    </div>
+                    <div class="card-footer bg-success border-success text-white">GPON FIBERHOME</div>
+                </div>
+
+                <div class="card border-danger mb-3" style="max-width: 18rem;">
+                    <div class="card-body text-danger">
+                    <h5 class="card-title">{{ zte_device }}</h5>
+                    <div class="mr-3 text-right" style="font-size: 36px;">
+                        <i class="fa fa-list fa-lg"></i>
+                    </div>
+                    </div>
+                    <div class="card-footer bg-danger border-danger text-white">GPON ZTE</div>
+                </div>
+
+                <div class="card border-warning mb-3" style="max-width: 18rem;">
+                    <div class="card-body text-warning">
+                    <h5 class="card-title">{{ hw_device }}</h5>
+                    <div class="mr-3 text-right" style="font-size: 36px;">
+                        <i class="fa fa-list fa-lg"></i>
+                    </div>
+                    </div>
+                    <div class="card-footer bg-warning border-warning text-white">GPON HUAWEI</div>
+                </div>
+            </div>
+
+            <h3 class="mt-4">Last Event</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Target Device</th>
+                        <th>Action</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Start Time</th>
+                        <th>Stop Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in last_event %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="{% url 'auto_tl1:logdetail' log.id %}">{{ log.target }}</a></td>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.status }}</td>
+                        <td>{{ log.message }}</td>
+                        <td>{{ log.time|date:'Y-m-d' }} {{ log.time|time:'H:i:s' }}</td>
+                        <td>{{ log.stoptime|date:'Y-m-d' }} {{ log.stoptime|time:'H:i:s' }}</td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

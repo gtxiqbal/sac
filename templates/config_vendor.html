@@ -1,0 +1,636 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+            <div class="col-md-12 vendor_gpon" id="{{ vendor_name }}">
+                {% if vendor_name == "fh" %}
+                    <h1 class="display-4">{{ page_title }} FIBERHOME</h1>
+                {% else %}
+                    <h1 class="display-4">{{ page_title }} ZTE</h1>
+                {% endif %}
+
+                <form action="{% url 'auto_tl1:config' vendor_name %}" id="form_config" method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <label for="inputSto">STO</label>
+                            <select class="form-control" name="sto" id="inputSto">
+                                <option value="pilih">Pilih STO</option>
+                                {% for sto in stos %}
+                                    <option value="{{ sto.sto_code }}">{{ sto.sto_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label for="inputIp">IP GPON</label>
+                            <select class="form-control" name="ip_gpon" id="inputIp" disabled>
+                                <option value="pilih">Pilih IP GPON</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-1">
+                            <label for="inputSlot">SLOT</label>
+                            <input type="number" class="form-control" name="slot" id="inputSlot" placeholder="Slot : x" required>
+                        </div>
+                        <div class="form-group col-md-1">
+                            <label for="inputPort">Port</label>
+                            <input type="number" class="form-control" name="port" id="inputPort" placeholder="Port : x" required>
+                        </div>
+
+                        <div class="form-group col-md-1">
+                            <label for="inputTipeOnt">Tipe ONT</label>
+                            <select id="inputTipeOnt" name="tipe_ont" class="form-control">
+                                {% for ont_key, ont_value in tipe_ont.items %}
+                                    <option value="{{ ont_key }}">{{ ont_value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label for="inputSN">Serial Number</label>
+                            <input type="text" class="form-control" name="sn" id="inputSN" placeholder="Serial Number Ont" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <button type="button" class="btn btn-success" name="cek_ONT" id="cek_ONT">Cek ONT</button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <label for="inputNamaPel">Nama Pelanggan (Optional)</label>
+                            <input type="text" class="form-control" name="nama_pel" id="inputNamaPel" placeholder="(Optional)">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="inputOnt" class="custom-control-input" value="Create ONT" name="create_ont" checked>
+                                <label class="custom-control-label" for="inputOnt">Create ONT</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="inputModify" class="custom-control-input" value="Modify ONT" name="create_ont">
+                                <label class="custom-control-label" for="inputModify">Modify ONT</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="inputAction_1" name="action" value="Config" class="custom-control-input" checked>
+                                <label class="custom-control-label" for="inputAction_1">Config</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="inputAction_2" name="action" value="Delete" class="custom-control-input">
+                                <label class="custom-control-label" for="inputAction_2">Delete</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-5">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="INET" name="service" value="INET">
+                                <label class="form-check-label" for="INET">Internet</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="VOICE" name="service" value="VOICE">
+                                <label class="form-check-label" for="VOICE">Voice</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="IPTV" name="service" value="IPTV">
+                                <label class="form-check-label" for="IPTV">IPTV</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="WIFIID" name="service" value="WIFIID">
+                                <label class="form-check-label" for="WIFIID">WIFIID</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="ASTINET" name="service" value="ASTINET">
+                                <label class="form-check-label" for="ASTINET">ASTINET</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="VPNIP" name="service" value="VPNIP">
+                                <label class="form-check-label" for="VPNIP">VPNIP</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="service_config">
+
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <button type="submit" class="btn btn-primary" id="proccess">Proccess</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var no = 1;
+            var vendor_gpon = $('.vendor_gpon').attr('id');
+            var config = $('#inputAction_1').prop('checked');
+            var deletes = $('#inputAction_2').prop('checked');
+
+            $('#cek_ONT').click(function () {
+
+                sto = $('#inputSto').val();
+                ip_gpon = $('#inputIp').val();
+                slot = $('#inputSlot').val();
+                port = $('#inputPort').val();
+                ont = $('#inputSN').val();
+
+                if (sto == 'pilih') {
+                    alert('STO belum dipilih!!!');
+                } else if (ip_gpon == 'pilih') {
+                    alert('IP GPON belum dipilih!!!');
+                } else if (slot == '') {
+                    alert('Slot GPON belum diisi!!!');
+                } else if (port == '') {
+                    alert('Port GPON belum diisi!!!');
+                } else if (ont == '') {
+                    alert('SN ONT belum diisi!!!');
+                } else {
+                    $('#cek_ONT').attr('disabled', true);
+                    $('#cek_ONT').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...');
+
+                    vendor_gpon = $('.vendor_gpon').attr('id')
+
+                    if (vendor_gpon == 'fh') {
+                        url_cek = "{% url 'auto_tl1:config_gui' 'fh' %}";
+                    } else if (vendor_gpon == 'zte') {
+                        url_cek = "{% url 'auto_tl1:config_gui' 'zte' %}";
+                    }
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url_cek,
+                        data: {
+                            'csrfmiddlewaretoken' : $('meta[name="csrf-token"]').attr('content'),
+                            'ip_gpon' : ip_gpon,
+                            'slot' : slot,
+                            'port' : port,
+                            'sn' : ont
+                        },
+                        success: function (result) {
+                            $('#cek_ONT').attr('disabled', false).html('Cek ONT');
+
+                            if (result.status == true) {
+                                Swal.fire({
+                                    type: 'success',
+                                    title: result.data,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            } else {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: result.data,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+            $('#form_config').submit(function (e) {
+                e.preventDefault();
+                form = $(e.target);
+
+                Swal.fire({
+                    title: 'Harap Tunggu...',
+                    onBeforeOpen: () => {
+                        Swal.showLoading()
+
+                        $.ajax({
+                            type: 'POST',
+                            url: form.attr('action'),
+                            data: form.serialize(),
+                            success: function (result) {
+                                if (result.status == true) {
+                                    Swal.fire({
+                                        title: 'Konfigurasi Selesai',
+                                        text: "Ingin melihat hasil konfigurasi?",
+                                        type: 'success',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#42d612',
+                                        cancelButtonColor: '#d33',
+                                        cancelButtonText: 'Close',
+                                        confirmButtonText: 'Cek Konfigurasi',
+                                        allowOutsideClick: false
+                                    }).then((results) => {
+                                        if (results.value) {
+                                            window.location = "{% url 'auto_tl1:result_config' %}"
+
+                                        } else if (results.dismiss == Swal.DismissReason.cancel) {
+                                            $.ajax({
+                                                type : 'POST',
+                                                url : "{% url 'auto_tl1:result_config' %}",
+                                                data: {
+                                                    'csrfmiddlewaretoken' : $('meta[name="csrf-token"]').attr('content')
+                                                }
+                                            })
+                                        }
+                                    })
+                                } else {
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: result.data,
+                                        showConfirmButton: true,
+                                        allowOutsideClick: false
+                                    })
+                                }
+                            }
+                        })
+                    },
+                    allowOutsideClick: false
+                });
+            });
+
+            $('#INET').click(function () {
+                no++;
+                var service = $(this).attr('value');
+
+                if ($(this).prop('checked') == true) {
+                    var tag = '<div class="form-row col-md-12" id="row_'+service+'">';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="service_'+service+'">Service</label>';
+                    tag += '<input type="text" class="form-control" name="service_name" id="service_'+service+'" value="'+service+'" readonly>';
+
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputVlan_'+service+'">Vlan</label>';
+                    tag += '<input type="number" class="form-control" name="vlan_'+service+'" id="inputVlan_'+service+'" value="" required>';
+                    tag += '</div>';
+
+                    if (vendor_gpon == 'fh') {
+                        tag += '<div class="form-group col-md-1">';
+                        tag += '<label for="inputCos_'+service+'">Cos</label>';
+                        tag += '<input type="number" class="form-control" name="cos_'+service+'" id="inputCos_'+service+'" value="0" required>';
+                        tag += '</div>';
+
+                        tag += '<div class="form-group">';
+                        tag += '<label for="inputLan_'+service+'">Lan</label>';
+                        tag += '<div class="form-group">';
+                        tag += '<div class="form-check form-check-inline">';
+                        tag += '<input class="form-check-input" type="checkbox" id="inputLan1_'+service+'" name="lan_'+service+'" value="1">';
+                        tag += '<label class="form-check-label" for="inputLan1_'+service+'">1</label>';
+                        tag += '</div>';
+                        tag += '<div class="form-check form-check-inline">';
+                        tag += '<input class="form-check-input" type="checkbox" id="inputLan2_'+service+'" name="lan_'+service+'" value="2">';
+                        tag += '<label class="form-check-label" for="inputLan2_'+service+'">2</label>';
+                        tag += '</div>';
+                        tag += '<div class="form-check form-check-inline">';
+                        tag += '<input class="form-check-input" type="checkbox" id="inputLan3_'+service+'" name="lan_'+service+'" value="3" checked>';
+                        tag += '<label class="form-check-label" for="inputLan3_'+service+'">3</label>';
+                        tag += '</div>';
+                        tag += '<div class="form-check form-check-inline">';
+                        tag += '<input class="form-check-input" type="checkbox" id="inputLan4_'+service+'" name="lan_'+service+'" value="4">';
+                        tag += '<label class="form-check-label" for="inputLan4_'+service+'">4</label>';
+                        tag += '</div>';
+                        tag += '</div>';
+                        tag += '</div>';
+
+                        tag += '<div class="form-group">';
+                        tag += '<label for="inputSSID_'+service+'">SSID</label>';
+                        tag += '<div class="form-group">';
+                        tag += '<div class="form-check form-check-inline">';
+                        tag += '<input class="form-check-input" type="checkbox" id="inputSSID1_'+service+'" name="ssid_'+service+'" value="1" checked>';
+                        tag += '<label class="form-check-label" for="inputSSID1_'+service+'">1</label>';
+                        tag += '</div>';
+                        tag += '<div class="form-check form-check-inline">';
+                        tag += '<input class="form-check-input" type="checkbox" id="inputSSID2_'+service+'" name="ssid_'+service+'" value="2">';
+                        tag += '<label class="form-check-label" for="inputSSID2_'+service+'">2</label>';
+                        tag += '</div>';
+                        tag += '<div class="form-check form-check-inline">';
+                        tag += '<input class="form-check-input" type="checkbox" id="inputSSID3_'+service+'" name="ssid_'+service+'" value="3">';
+                        tag += '<label class="form-check-label" for="inputSSID3_'+service+'">3</label>';
+                        tag += '</div>';
+                        tag += '<div class="form-check form-check-inline">';
+                        tag += '<input class="form-check-input" type="checkbox" id="inputSSID4_'+service+'" name="ssid_'+service+'" value="4">';
+                        tag += '<label class="form-check-label" for="inputSSID4_'+service+'">4</label>';
+                        tag += '</div>';
+                        tag += '</div>';
+                        tag += '</div>';
+                    }
+
+                    if (vendor_gpon == 'zte') {
+                        tag += '<div class="form-group col-md-1">';
+                        tag += '<label for="inputVport_'+service+'">VPORT</label>';
+                        tag += '<input type="number" class="form-control" name="vport_'+service+'" id="inputVport_'+service+'" value="3" required>';
+                        tag += '</div>';
+                    }
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwUp_'+service+'">Upload</label>';
+                    tag += '<input type="text" class="form-control" name="bw_up_'+service+'" id="inputBwUp_'+service+'" placeholder="1536K" value="2253KB0" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwDown_'+service+'">Download</label>';
+                    tag += '<input type="text" class="form-control" name="bw_down_'+service+'" id="inputBwDown_'+service+'" placeholder="15360K" value="11264KB0" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-2">';
+                    tag += '<label for="inputUser_'+service+'" class="hideuser_'+service+'">User  Accout</label>';
+                    tag += '<input type="email" class="form-control" name="user_accout_'+service+'" id="inputUser_'+service+'" placeholder="aaa@aaa" value="131xxxxxxxxx@telkom.net" required>';
+                    tag += '</div>';
+                    tag += '<div class="form-group col-md-2">';
+                    tag += '<label for="inputPassword_'+service+'" class="hidepass_'+service+'">Password  Accout</label>';
+                    tag += '<input type="password" class="form-control" name="pass_accout_'+service+'" id="inputPassword_'+service+'" required>';
+                    tag += '</div>';
+
+                    tag += '</div>';
+                    $('#service_config').append(tag);
+                } else if ($(this).prop('checked') == false) {
+                    $('#row_'+service).remove();
+                }
+            });
+
+            $('#VOICE').click(function () {
+                no++;
+                var service = $(this).attr('value');
+
+                if ($(this).prop('checked') == true) {
+                    var tag = '<div class="form-row col-md-12" id="row_'+service+'">';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="service_'+service+'">Service</label>';
+                    tag += '<input type="text" class="form-control" name="service_name" id="service_'+service+'" value="'+service+'" readonly>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputVlan_'+service+'">Vlan</label>';
+                    tag += '<input type="number" class="form-control" name="vlan_'+service+'" id="inputVlan_'+service+'" value="" required>';
+                    tag += '</div>';
+
+                    if (vendor_gpon == 'zte') {
+                        tag += '<div class="form-group col-md-1">';
+                        tag += '<label for="inputVport_'+service+'">VPORT</label>';
+                        tag += '<input type="number" class="form-control" name="vport_'+service+'" id="inputVport_'+service+'" value="2" required>';
+                        tag += '</div>';
+                    }
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputLan_'+service+'">Pots</label>';
+                    tag += '<input type="text" class="form-control" name="lan_'+service+'" id="inputLan_'+service+'" value="1" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwUp_'+service+'">Upload</label>';
+                    tag += '<input type="text" class="form-control" name="bw_up_'+service+'" id="inputBwUp_'+service+'" placeholder="1M" value="1M" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwDown_'+service+'">Download</label>';
+                    tag += '<input type="text" class="form-control" name="bw_down_'+service+'" id="inputBwDown_'+service+'" placeholder="1M" value="1M" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-2">';
+                    tag += '<label for="inputUser_'+service+'" class="hideuser_'+service+'">User  Accout</label>';
+                    tag += '<input type="email" class="form-control" name="user_accout_'+service+'" id="inputUser_'+service+'" placeholder="aaa@telkom.net.id" value="+62266xxxxxx@telkom.net.id" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-2">';
+                    tag += '<label for="inputPassword_'+service+'" class="hidepass_'+service+'">Password  Accout</label>';
+                    tag += '<input type="password" class="form-control" name="pass_accout_'+service+'" id="inputPassword_'+service+'" required>';
+                    tag += '</div>';
+
+                    tag += '</div>';
+
+                    $('#service_config').append(tag);
+                } else if ($(this).prop('checked') == false) {
+                    $('#row_'+service).remove();
+                }
+            });
+
+            $('#IPTV').click(function () {
+                no++;
+                var service = $(this).attr('value');
+
+                if ($(this).prop('checked') == true) {
+                    var tag = '<div class="form-row col-md-12" id="row_'+service+'">';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="service_'+service+'">Service</label>';
+                    tag += '<input type="text" class="form-control" name="service_name" id="service_'+service+'" value="'+service+'" readonly>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group">';
+                    tag += '<label for="inputLan_'+service+'">Lan</label>';
+                    tag += '<div class="form-group">';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan1_'+service+'" name="lan_'+service+'" value="1">';
+                    tag += '<label class="form-check-label" for="inputLan1_'+service+'">1</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan2_'+service+'" name="lan_'+service+'" value="2">';
+                    tag += '<label class="form-check-label" for="inputLan2_'+service+'">2</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan3_'+service+'" name="lan_'+service+'" value="3">';
+                    tag += '<label class="form-check-label" for="inputLan3_'+service+'">3</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan4_'+service+'" name="lan_'+service+'" value="4" checked>';
+                    tag += '<label class="form-check-label" for="inputLan4_'+service+'">4</label>';
+                    tag += '</div>';
+                    tag += '</div>';
+                    tag += '</div>';
+
+                    tag += '</div>';
+
+                    $('#service_config').append(tag);
+                } else if ($(this).prop('checked') == false) {
+                    $('#row_'+service).remove();
+                }
+            });
+
+            $('#WIFIID').click(function () {
+                no++;
+                var service = $(this).attr('value');
+
+                if ($(this).prop('checked') == true) {
+                    var tag = '<div class="form-row col-md-12" id="row_'+service+'">';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="service_'+service+'">Service</label>';
+                    tag += '<input type="text" class="form-control" name="service_name" id="service_'+service+'" value="'+service+'" readonly>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputVlan_'+service+'">Vlan</label>';
+                    tag += '<input type="number" class="form-control" name="vlan_'+service+'" id="inputVlan_'+service+'" value="" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group">';
+                    tag += '<label for="inputLan_'+service+'">Lan</label>';
+                    tag += '<div class="form-group">';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan1_'+service+'" name="lan_'+service+'" value="1">';
+                    tag += '<label class="form-check-label" for="inputLan1_'+service+'">1</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan2_'+service+'" name="lan_'+service+'" value="2" checked>';
+                    tag += '<label class="form-check-label" for="inputLan2_'+service+'">2</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan3_'+service+'" name="lan_'+service+'" value="3">';
+                    tag += '<label class="form-check-label" for="inputLan3_'+service+'">3</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan4_'+service+'" name="lan_'+service+'" value="4">';
+                    tag += '<label class="form-check-label" for="inputLan4_'+service+'">4</label>';
+                    tag += '</div>';
+                    tag += '</div>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwUp_'+service+'">Upload</label>';
+                    tag += '<input type="text" class="form-control" name="bw_up_'+service+'" id="inputBwUp_'+service+'" placeholder="20M" value="20M" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwDown_'+service+'">Download</label>';
+                    tag += '<input type="text" class="form-control" name="bw_down_'+service+'" id="inputBwDown_'+service+'" placeholder="20M" value="20M" required>';
+                    tag += '</div>';
+
+                    tag += '</div>';
+
+                    $('#service_config').append(tag);
+                } else if ($(this).prop('checked') == false) {
+                    $('#row_'+service).remove();
+                }
+            });
+
+            $('#ASTINET').click(function () {
+                no++;
+                var service = $(this).attr('value');
+
+                if ($(this).prop('checked') == true) {
+                    var tag = '<div class="form-row col-md-12" id="row_'+service+'">';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="service_'+service+'">Service</label>';
+                    tag += '<input type="text" class="form-control" name="service_name" id="service_'+service+'" value="'+service+'" readonly>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputVlan_'+service+'">Vlan</label>';
+                    tag += '<input type="number" class="form-control" name="vlan_'+service+'" id="inputVlan_'+service+'" value="" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group">';
+                    tag += '<label for="inputLan_'+service+'">Lan</label>';
+                    tag += '<div class="form-group">';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan1_'+service+'" name="lan_'+service+'" value="1" checked>';
+                    tag += '<label class="form-check-label" for="inputLan1_'+service+'">1</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan2_'+service+'" name="lan_'+service+'" value="2">';
+                    tag += '<label class="form-check-label" for="inputLan2_'+service+'">2</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan3_'+service+'" name="lan_'+service+'" value="3">';
+                    tag += '<label class="form-check-label" for="inputLan3_'+service+'">3</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan4_'+service+'" name="lan_'+service+'" value="4">';
+                    tag += '<label class="form-check-label" for="inputLan4_'+service+'">4</label>';
+                    tag += '</div>';
+                    tag += '</div>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwUp_'+service+'">Upload</label>';
+                    tag += '<input type="text" class="form-control" name="bw_up_'+service+'" id="inputBwUp_'+service+'" placeholder="100M" value="100M" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwDown_'+service+'">Download</label>';
+                    tag += '<input type="text" class="form-control" name="bw_down_'+service+'" id="inputBwDown_'+service+'" placeholder="100M" value="100M" required>';
+                    tag += '</div>';
+
+                    tag += '</div>';
+
+                    $('#service_config').append(tag);
+                } else if ($(this).prop('checked') == false) {
+                    $('#row_'+service).remove();
+                }
+            });
+
+            $('#VPNIP').click(function () {
+                no++;
+                var service = $(this).attr('value');
+
+                if ($(this).prop('checked') == true) {
+                    var tag = '<div class="form-row col-md-12" id="row_'+service+'">';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="service_'+service+'">Service</label>';
+                    tag += '<input type="text" class="form-control" name="service_name" id="service_'+service+'" value="'+service+'" readonly>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputVlan_'+service+'">Vlan</label>';
+                    tag += '<input type="number" class="form-control" name="vlan_'+service+'" id="inputVlan_'+service+'" value="" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group">';
+                    tag += '<label for="inputLan_'+service+'">Lan</label>';
+                    tag += '<div class="form-group">';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan1_'+service+'" name="lan_'+service+'" value="1" checked>';
+                    tag += '<label class="form-check-label" for="inputLan1_'+service+'">1</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan2_'+service+'" name="lan_'+service+'" value="2">';
+                    tag += '<label class="form-check-label" for="inputLan2_'+service+'">2</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan3_'+service+'" name="lan_'+service+'" value="3">';
+                    tag += '<label class="form-check-label" for="inputLan3_'+service+'">3</label>';
+                    tag += '</div>';
+                    tag += '<div class="form-check form-check-inline">';
+                    tag += '<input class="form-check-input" type="checkbox" id="inputLan4_'+service+'" name="lan_'+service+'" value="4">';
+                    tag += '<label class="form-check-label" for="inputLan4_'+service+'">4</label>';
+                    tag += '</div>';
+                    tag += '</div>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwUp_'+service+'">Upload</label>';
+                    tag += '<input type="text" class="form-control" name="bw_up_'+service+'" id="inputBwUp_'+service+'" placeholder="5M" value="5M" required>';
+                    tag += '</div>';
+
+                    tag += '<div class="form-group col-md-1">';
+                    tag += '<label for="inputBwDown_'+service+'">Download</label>';
+                    tag += '<input type="text" class="form-control" name="bw_down_'+service+'" id="inputBwDown_'+service+'" placeholder="5M" value="5M" required>';
+                    tag += '</div>';
+
+                    tag += '</div>';
+
+                    $('#service_config').append(tag);
+                } else if ($(this).prop('checked') == false) {
+                    $('#row_'+service).remove();
+                }
+            });
+
+        });
+    </script>
+
+{% endblock %}

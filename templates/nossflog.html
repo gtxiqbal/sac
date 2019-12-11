@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <h1 class="display-4">{{ status }}</h1>
+
+            {% if nossflog == 'empty'%}
+                <script>
+                    alert('Server Log NOSS-F sedang Down!!!');
+                    history.go(-1);
+                </script>
+            {% else %}
+                <pre>
+                    {{ nossflog }}
+                </pre>
+            {% endif %}
+        </div>
+    <div class="col-md-3"></div>
+    </div>
+{% endblock %}

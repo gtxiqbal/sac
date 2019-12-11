@@ -1,0 +1,117 @@
+<h2 class="mt-4">User Active</h2>
+<table id="tb_user_active" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>IP Client</th>
+            <th>Level</th>
+            <th>Last Login</th>
+            {% if request.session.level == "superadmin" %}
+                <th>Action</th>
+                <th><input type="checkbox" name="pilih_terminate_semua" class="pilih_terminate_semua"></th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for userActive in userActives %}
+        <tr>
+            <td id="{{ userActive.username }}" class="user_active">
+                {% if userActive.sessionid != request.COOKIES.sessionid %}
+                    {{ userActive.username }}
+                {% else %}
+                    {{ userActive.username }} (Current User)
+                {% endif %}
+            </td>
+            <td id="{{ userActive.ip_client }}" class="ip_active">{{ userActive.ip_client }}</td>
+            <td>{{ userActive.level }}</td>
+            <td>{{ userActive.last_login|timesince }} Ago</td>
+            {% if request.session.level == "superadmin" %}
+                {% if userActive.sessionid != request.COOKIES.sessionid %}
+                    <td><button id="{{ userActive.sessionid }}" type="button" class="btn btn-danger terminate" data-toggle="modal" data-target="#terminateModal" data-backdrop="static" data-keyboard="false">Terminate</button></td>
+                    <td><input type="checkbox" name="sessionid" class="pilih_terminate" value="{{ userActive.sessionid }}"></td>
+                {% else %}
+                    <td><button class="btn btn-default" disabled>Current User</button></td>
+                    <td>-</td>
+                {% endif %}
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="modal fade" id="terminateModal" tabindex="-1" role="dialog" aria-labelledby="terminateModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="terminateModalLabel">Terminate</h5>
+        <button type="button" class="close batal_modal_terminate" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="pesan_modal_terminate">
+
+      </div>
+      <div class="modal-footer">
+          <form action="{% url 'auto_tl1:terminate' %}" method="post" id="form-terminate">
+              {% csrf_token %}
+              <input type="hidden" name="sessionid" id="sessionid" value="">
+              <button type="button" class="btn btn-primary" id="btn-terminate" data-dismiss="modal">Terminate</button>
+              <button type="button" class="btn btn-secondary batal_modal_terminate" data-dismiss="modal">Batal</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#tb_user_active').DataTable({
+                "order" : [[3, "desc"]]
+            });
+
+        $('.pilih_terminate_semua').click(function () {
+            if ($(this).prop('checked') == true) {
+                $('.pilih_terminate').attr('checked', this.checked);
+            } else if ($(this).prop('checked') == false) {
+                 $('.pilih_terminate').attr('checked', '');
+            }
+        });
+
+        $('.pilih_terminate').on('click', function () {
+            if ($('.pilih_terminate').length == $('.pilih_terminate:checked').length) {
+                $('.pilih_terminate_semua').attr('checked', 'checked');
+            } else {
+                $('.pilih_terminate_semua').removeAttr('checked');
+            }
+        });
+
+        $('.terminate').on('click', function () {
+            var val_id = $(this).attr('id');
+
+            var isi_user = $('.user_active').attr('id');
+            var isi_ip = $('.ip_active').attr('id');
+
+            var pesan = 'Ingin Mengakhiri aktivitas user ' + isi_user + ' pada IP ' + isi_ip + ' ?';
+
+            $('#pesan_modal_terminate').html(pesan);
+
+            $('#sessionid').attr('value', val_id);
+        });
+
+        $('#btn-terminate').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: $('#form-terminate').attr('action'),
+                data: $('#form-terminate').serialize(),
+                success: function (msg) {
+                    if (msg.status == true) {
+                        $('#user_active').load("{% url 'auto_tl1:tbuseractive' request.COOKIES.sessionid %}");
+                    }
+                }
+            });
+        });
+    });
+</script>

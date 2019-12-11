@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mt-4">{{ page_title }}</h2>
+            <table id="tb" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Target</th>
+                        <th>Action</th>
+                        <th>Status</th>
+                        <th>Message</th>
+                        <th>Start Time</th>
+                        <th>Stop Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td><a href="{% url 'auto_tl1:logdetail' log.id %}">{{ log.target }}</a></td>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.status }}</td>
+                        <td>{{ log.message }}</td>
+                        <td>{{ log.time|date:'Y-m-d' }} {{ log.time|time:'H:i:s' }}</td>
+                        <td>{{ log.stoptime|date:'Y-m-d' }} {{ log.stoptime|time:'H:i:s' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

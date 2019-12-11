@@ -1,0 +1,5 @@
+.vscode/
+.idea/
+venv/
+auto_tl1/migrations/
+login_app/migrations/

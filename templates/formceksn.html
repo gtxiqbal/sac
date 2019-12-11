@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            {% if vendor_code == "fh" %}
+                <h1 class="display-4">{{ page_title }} FIBERHOME</h1>
+            {% elif vendor_code == "zte" %}
+                <h1 class="display-4">{{ page_title }} ZTE</h1>
+            {% else %}
+                <h1 class="display-4">{{ page_title }} HUAWEI</h1>
+            {% endif %}
+
+            {% if cek_tipe == 'unreg' %}
+                <form action="{% url 'auto_tl1:ceksnunreg' vendor_code %}" id="form_config" method="post">
+            {% elif cek_tipe == 'reg' %}
+                <form action="{% url 'auto_tl1:ceksnreg' vendor_code %}" id="form_config" method="post">
+            {% elif cek_tipe == 'service' %}
+                <form action="{% url 'auto_tl1:cekservice' vendor_code %}" id="form_config" method="post">
+            {% elif cek_tipe == 'status' %}
+                <form action="{% url 'auto_tl1:ceksnstat' vendor_code %}" id="form_config" method="post">
+            {% endif %}
+                {% csrf_token %}
+
+            <div class="form-group">
+                <label for="server_nms"></label>
+            </div>
+
+            <div class="form-group">
+                {% for tl1_server in server_tl1 %}
+                    {% if 'HUAWEI' not in tl1_server.name %}
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="tl1_{{ tl1_server.id }}" name="tl1_server" value="{{ tl1_server.ip_server }}" class="custom-control-input" checked>
+                            <label class="custom-control-label" for="tl1_{{ tl1_server.id }}">{{ tl1_server.name }}</label>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="ip_gpon">Masukkan IP</label>
+                <textarea class="form-control" id="ip_gpon" rows="10" name="ip_gpon" placeholder="{{ placeholder }}"></textarea>
+            </div>
+
+            <button type="button" class="btn btn-primary" id="submit_config">Submit</button>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

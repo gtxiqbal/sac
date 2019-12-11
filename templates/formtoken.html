@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb" style="background-color: white">
+        <li class="breadcrumb-item" style="background-color: white" aria-current="page"><span class="navbar-toggler-icon"></span></li>
+      </ol>
+    </nav>
+    <main class="container">
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="jumbotron">
+                    <form action="{% url 'login:cektoken' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="tipe" id="tipe" value="{{ request.session.tipe }}">
+                      <div class="form-group">
+                        <label for="InputToken">Token</label>
+                        <input type="text" class="form-control" id="InputToken" name="token_api" placeholder="Masukkan Token" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button type="button" id="token_get" class="btn btn-success">Get Token</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Token</h5>
+            <button type="button" class="close batal_modal_token" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="pesan_modal_token">
+            ...
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-body">
+                <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                </div>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    {% for message in messages %}
+        <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Token</h5>
+                <button type="button" class="close batal_modal_token" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="pesan_modal_token">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    {% for message in messages %}
+        <script>
+            $('#messageModal').modal({
+                backdrop : 'static',
+                keyboard : false
+            });
+        </script>
+    {% endfor %}
+
+    <script type="text/javascript">
+        $('#token_get').on('click', function () {
+            if ($('#tipe').val() == 'Telegram') {
+                $('#loadingModal').modal({
+                    backdrop : 'static',
+                    keyboard : false
+                });
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '',
+                dataType: 'json',
+                data: {
+                    'csrfmiddlewaretoken' : $('input[name="csrfmiddlewaretoken"]').attr('value'),
+                    'tipe' : $('#tipe').val(),
+                },
+                success: function (msg) {
+                    if (msg.tipe == 'Telegram') {
+                        $('#loadingModal').modal('hide');
+
+                        if (msg.status == 200) {
+                            $('#exampleModal').modal({
+                                backdrop : 'static',
+                                keyboard : false
+                            });
+
+                            $('#pesan_modal_token').html('OTP sudah dikirim ulang ke Telgram @' + msg.data.result.chat.username);
+                        } else {
+                            $('#exampleModal').modal({
+                                backdrop : 'static',
+                                keyboard : false
+                            });
+
+                            $('#pesan_modal_token').html('OTP gagal dikirim ulang ke Telgram @' + msg.data.result.chat.username);
+                        }
+                    } else {
+                        $('#exampleModal').modal({
+                            backdrop : 'static',
+                            keyboard : false
+                        });
+
+                        $('#pesan_modal_token').html('OTP sudah dikirim ulang ke Email ' + msg.data);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

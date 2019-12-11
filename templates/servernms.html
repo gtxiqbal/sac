@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2 class="mt-4">{{ page_title }}</h2>
+    <table id="tb_nms" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr align="center">
+                <th>No</th>
+                <th>HOSTNAME</th>
+                <th>IP SERVER</th>
+                <th>VENDOR</th>
+                <th>STATUS</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for server in servers %}
+                <tr align="center">
+                    <td width="5px">{{ forloop.counter }}</td>
+                    <td width="60px">{{ server.name }}</td>
+                    <td width="40px" id="ip_server_{{ server.id }}">{{ server.ip_server }}</td>
+                    <td width="30px">{{ server.vendor }}</td>
+                    <td width="30px" id="status_nms_{{ server.id }}">{{ server.status }}</td>
+                    <td width="30px">
+                        <button class="btn btn-primary refresh" id="refresh_{{ server.id }}">
+                            Refresh
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+m
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            {% if hasil != '' %}
+                <h1 class="display-4">Hasil</h1>
+                {% if hw == True %}
+                    <pre>
+                        {{ hasil }}
+                    </pre>
+                {% else %}
+                    <code>
+                        {{ hasil|linebreaks }}
+                    </code>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

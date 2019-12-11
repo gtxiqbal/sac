@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2 class="mt-4">{{ page_title }}</h2>
+    <a class="btn btn-primary" href="{% url 'auto_tl1:cetakpdf' vendor_perangkat %}">Cetak PDF</a>
+    <a class="btn btn-primary" href="{% url 'auto_tl1:cetakexcel' vendor_perangkat %}">Export Excel</a><br>
+    <table id="tb_perangkat" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr align="center">
+                <th>No</th>
+                <th>HOSTNAME</th>
+                <th>IP GPON</th>
+                <th width="40px">VLAN INTERNET</th>
+                <th width="40px">VLAN VOICE</th>
+                <th>STO</th>
+                <th>SERVER</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for gpon in gpons %}
+                <tr align="center">
+                    <td width="5px">{{ forloop.counter }}</td>
+                    <td width="60px">{{ gpon.hostname }}</td>
+                    <td width="40px">{{ gpon.ip_gpon }}</td>
+                    <td>{{ gpon.vlan_inet }}</td>
+                    <td>{{ gpon.vlan_voice }}</td>
+                    <td width="30px">{{ gpon.sto }}</td>
+                    <td width="30px">{{ gpon.ip_server }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

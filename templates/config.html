@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="display-4">{{ page_title }}</h1>
+            {% if page_title == "CONFIG BATCH" %}
+                <form action="{% url 'auto_tl1:config_batch' %}" id="form_config" method="post">
+            {% else %}
+                <form action="{% url 'auto_tl1:delete_config_batch' %}" id="form_config" method="post">
+            {% endif %}
+                    {% csrf_token %}
+                  <div class="form-group">
+                    {% if page_title == "CONFIG BATCH" %}
+                        <a class="btn btn-primary" href="{% url 'auto_tl1:sop_batch' 'configbatch' %}">Lihat SOP FORMAT PARAMETER</a><br>
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'auto_tl1:sop_batch' 'deletebatch' %}">Lihat SOP FORMAT PARAMETER</a><br>
+                    {% endif %}
+                      <label for="ip_gpon">Masukkan Parameter</label>
+                      <textarea class="form-control" id="ip_gpon" rows="20" name="cmd_gpon" placeholder="{{ placeholder }}"></textarea>
+                  </div>
+                  <button type="button" class="btn btn-primary" id="submit_config">Submit</button>
+                </form>
+        </div>
+    </div>
+{% endblock %}

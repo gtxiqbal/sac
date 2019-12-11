@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb" style="background-color: white">
+        <li class="breadcrumb-item" style="background-color: white" aria-current="page"><span class="navbar-toggler-icon"></span></li>
+      </ol>
+    </nav>
+    <main class="container">
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="jumbotron">
+                        <div class="mx-auto social-container my-2 order-md-4">
+                            <h3 class="text-center">Verivikasi 2 langkah</h3>
+                            <br>
+                            <a class="btn btn-primary mb-2 col-md-12" href="{% url 'login:pilihOtp' 'Telegram' %}">With Telegram</a>
+                            <a class="btn btn-danger mb-2 col-md-12" href="{% url 'login:pilihOtp' 'Email' %}">With Email</a>
+                        </div>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </main>
+
+    {% for message in messages %}
+        <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Token</h5>
+                <button type="button" class="close batal_modal_token" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="pesan_modal_token">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    {% for message in messages %}
+        <script>
+            $('#messageModal').modal({
+                'show' : true,
+                'keyboard' : false
+            });
+        </script>
+    {% endfor %}
+
+</body>
+</html>

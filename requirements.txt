@@ -1,0 +1,9 @@
+django
+djangorestframework
+paramiko
+xhtml2pdf
+xlwt
+requests
+django-session-timeout
+numpy
+mysqlclient

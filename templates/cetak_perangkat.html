@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>{{ page_title }}</title>
+        <style type="text/css">
+            body {
+                font-weight: 200;
+                font-size: 14px;
+            }
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                color: #007cae;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 20px 0px 20px;
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+        </style>
+    </head>
+    <body>
+        <div class='wrapper'>
+            <div class='header'>
+                <p class='title'>{{ page_title }}</p>
+            </div>
+            <div>
+                <div class='details'>
+                    Date: {{ date }}
+                    <hr class='hrItem' />
+
+                </div>
+            </div>
+        </div>
+    <table border="1">
+        <tr style="padding-top: 5px">
+            <th width="30px">No</th>
+            <th>HOSTNAME</th>
+            <th>IP GPON</th>
+            <th>VLAN INTERNET</th>
+            <th>VLAN VOICE</th>
+            <th>STO</th>
+            <th>SERVER</th>
+        </tr>
+        {% for gpon in gpons %}
+            <tr style="padding-top: 5px">
+                <td align="center">{{ forloop.counter }}</td>
+                <td align="center" width="160px">{{ gpon.hostname }}</td>
+                <td align="center" width="120px">{{ gpon.ip_gpon }}</td>
+                <td align="center" width="100px">{{ gpon.vlan_inet }}</td>
+                <td align="center" width="100px">{{ gpon.vlan_voice }}</td>
+                <td align="center" width="120px">{{ gpon.sto }}</td>
+                <td align="center" width="120px">{{ gpon.ip_server }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    </body>
+</html>
